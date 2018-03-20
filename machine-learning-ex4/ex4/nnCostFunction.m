@@ -84,6 +84,13 @@ endfor
 % first sum by columns from 1 to K, where K - number of labels (10 in our case)
 J = sum(sum(-Y.*log(h) - (1-Y).*log(1-h), 2)) / m;
 
+% Taking into account regularization
+Theta1_ = Theta1(:, 2:size(Theta1,2));
+Theta2_ = Theta2(:, 2:size(Theta2,2));
+
+regularization = (lambda/(2*m)) * (sum(sum(Theta1_.^2, 2)) + sum(sum(Theta2_.^2, 2)));
+
+J = J + regularization;
 
 
 
