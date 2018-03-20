@@ -63,19 +63,26 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 
+a1 = [ones(size(X)(1), 1) X];
+z2 = a1 * Theta1';
+g2 = sigmoid(z2);
+a2 = [ones(size(g2)(1), 1) g2];
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
+h = a3;
 
+% generating Y matrix from y vector
 
+Y = [];
+for i=1:size(y)(1)
+  example = zeros(1, 10);
+  example(y(i)) = 1;
+  Y = [Y; example];
+endfor
 
-
-
-
-
-
-
-
-
-
-
+% Calculating cost function
+% first sum by columns from 1 to K, where K - number of labels (10 in our case)
+J = sum(sum(-Y.*log(h) - (1-Y).*log(1-h), 2)) / m;
 
 
 
