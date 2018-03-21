@@ -98,6 +98,30 @@ J = J_ + regularization;
 
 % =========================================================================
 
+for t=1:m
+  % feed forward
+  x = X(t,:)';
+  a_1 = [1; x];
+  z_2 = Theta1 * a_1;
+  a_2 = [1; sigmoid(z_2)];
+  z_3 = Theta2 * a_2;
+  a_3 = sigmoid(z_3); % size = 1 10
+ 
+  % transform y
+  y_ = zeros(10, 1);
+  y_(y(t)) = 1;
+
+  % calculate deltas
+  delta_3 = (a_3 - y_);
+  g_prime = z_2 .* (1-z_2);
+  delta_2 = (Theta2' * delta_3') .* g_prime;
+  delta_2 = delta_2(2:end);
+  
+  # calculate grad
+  Theta2_grad = (Theta2_grad +  (a_2' * delta_3)') / m;
+  Theta1_grad = (Theta1_grad +  (a_1' * delta_2))' / m;
+endfor;
+
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
 
