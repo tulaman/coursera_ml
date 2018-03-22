@@ -65,11 +65,9 @@ Theta2_grad = zeros(size(Theta2));
 
 a1 = [ones(size(X, 1), 1) X];
 z2 = a1 * Theta1';
-g2 = sigmoid(z2);
-a2 = [ones(size(g2)(1), 1) g2];
+a2 = [ones(size(z2, 1), 1) sigmoid(z2)];
 z3 = a2 * Theta2';
 a3 = sigmoid(z3);
-h = a3;
 
 % generating Y matrix from y vector
 
@@ -82,7 +80,7 @@ endfor
 
 % Calculating cost function
 % first sum by columns from 1 to K, where K - number of labels (10 in our case)
-J_ = sum(sum(-Y.*log(h) - (1-Y).*log(1-h), 2)) / m;
+J_ = sum(sum(-Y.*log(a3) - (1-Y).*log(1-a3), 2)) / m;
 
 % Taking into account regularization
 Theta1_ = [zeros(size(Theta1, 1), 1) Theta1(:, 2:end)];
@@ -98,30 +96,16 @@ J = J_ + regularization;
 
 % =========================================================================
 
-for t=1:m
-  % feed forward
-  x = X(t,:)';
-  a_1 = [1; x];
-  z_2 = Theta1 * a_1;
-  a_2 = [1; sigmoid(z_2)];
-  z_3 = Theta2 * a_2;
-  a_3 = sigmoid(z_3); % size = 1 10
- 
-  % transform y
-  y_ = zeros(num_labels, 1);
-  y_(y(t)) = 1;
-
-  % calculate deltas
-  delta_3 = (a_3 - y_);
-
-  delta_2 = (Theta2' * delta_3) .* sigmoidGradient(a_2);
-  delta_2 = delta_2(2:end);
+% calculate deltas
+delta_3 = (a3 - Y);
+delta_2 = (delta_3 * Theta2) .* [ones(size(z2, 1), 1) sigmoidGradient(z2)];
+delta_2 = delta_2(:, 2:end);
   
-  # calculate grad
-  Theta2_grad = Theta2_grad + delta_3 * a_2';
-  Theta1_grad = Theta1_grad + delta_2 * a_1';
-endfor;
+# calculate grad
+Theta2_grad = delta_3' * a2;
+Theta1_grad = delta_2' * a1;
 
+% Regularization
 Theta1_grad = Theta1_grad ./ m + (lambda/m) * Theta1_;
 Theta2_grad = Theta2_grad ./ m + (lambda/m) * Theta2_;
 
